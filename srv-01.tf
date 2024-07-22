@@ -7,19 +7,36 @@ resource "proxmox_vm_qemu" "srv-01" {
     sockets     = 1
     cpu         = "host"
     memory      = 2048
+    bootdisk    =  "scsi0"
+    scsihw      = "lsi"
+    agent       = 1
+     
 
-
-    network {
-      bridge   = "vmbr0"
-      model    = "virtio"
-      firewall = false
+disks {
+  scsi {
+    scsi0 {
+      cdrom {
+        iso = "local:iso/ubuntu-22.04.4-live-server-amd64.iso"
+      }
+      }
+  scsi1 {
+    disk {
+        storage = "local-lvm"
+        size = "20G"
+      }
     }
+  }
+}
 
+network {
+    bridge   = "vmbr0"
+    model    = "virtio"
+    firewall = false
+    }
+   
     os_type    = "cloud-init"
     ipconfig0  = "ip=192.168.1.160/24,gw=192.168.1.1"
     nameserver = "192.168.1.1" 
     ciuser     = "nurlan"
-    cipassword = "123"
+    cipassword = "123"  
 }
-
-
